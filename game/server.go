@@ -1,6 +1,7 @@
 package game
 
 import (
+	"encoding/json"
 	"github.com/nathonNot/go-gdt/igame"
 	"github.com/nathonNot/go-gdt/log"
 	"sync"
@@ -17,6 +18,11 @@ var instance Server
 
 func GetGameServerInstance() *Server {
 	return &instance
+}
+
+func DispatchEventInServer(msgType int, eventData interface{}) {
+	d, _ := json.Marshal(eventData)
+	instance.DispatchEventInServer(msgType, d)
 }
 
 func (gameServer *Server) DispatchEventInServer(msgType int, eventData []byte) {
