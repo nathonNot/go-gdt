@@ -1,18 +1,26 @@
 package config
 
+import "time"
+
 type IServerConfig interface {
 	DefaultConfig()
+	GetGameFrameTime() time.Duration
 }
 
 type DefaultConfig struct {
-	Db    DbConfig    `json:"db"`
-	Redis RedisConfig `json:"redis"`
+	Db          DbConfig     `json:"db"`
+	Redis       RedisConfig  `json:"redis"`
+	GameRunTime SGameRunTime `json:"gameRunTime"`
 }
 
 var localConfig IServerConfig
 
 func (c DefaultConfig) DefaultConfig() {
 	localConfig = DefaultConfig{}
+}
+
+func (c DefaultConfig) GetGameFrameTime() time.Duration {
+	return c.GameRunTime.TimeSpentPerFrame
 }
 
 func GetGlobalConfig() IServerConfig {

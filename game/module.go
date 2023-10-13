@@ -1,6 +1,7 @@
 package game
 
 import (
+	"github.com/nathonNot/go-gdt/config"
 	"github.com/nathonNot/go-gdt/igame"
 	"time"
 )
@@ -24,7 +25,7 @@ func (md *Module) Base() {
 func (md *Module) Init() {
 }
 
-func (md *Module) UpLogic() {
+func (md *Module) UpLogic(frameTime time.Duration) {
 
 }
 
@@ -58,11 +59,14 @@ func (md *Module) GetServerEvent() map[int]igame.OnServerEvent {
 
 func ModulesRun(modules []igame.Module) {
 	var mod igame.Module
+	serverConfig := config.GetGlobalConfig()
 	for {
+		timeNow := time.Now()
+		frameTime := serverConfig.GetGameFrameTime()
 		for i := range modules {
 			mod = modules[i]
-			mod.UpLogic()
+			mod.UpLogic(frameTime)
 		}
-		time.Sleep(time.Millisecond * 60)
+		time.Sleep(frameTime - time.Since(timeNow))
 	}
 }

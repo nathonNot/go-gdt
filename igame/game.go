@@ -1,5 +1,7 @@
 package igame
 
+import "time"
+
 type OnMessage func(msgType int, msgInfo []byte, id string)
 type OnServerEvent func(msgType int, eventData []byte)
 
@@ -8,7 +10,7 @@ type Module interface {
 	Init()
 	Base()
 	BeginPlay()
-	UpLogic()
+	UpLogic(frameTime time.Duration)
 	UpPlayer()
 	UnLoad()
 	GetMsgHandleFunc(msgType int) OnMessage
