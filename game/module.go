@@ -1,7 +1,6 @@
 package game
 
 import (
-	"github.com/nathonNot/go-gdt/config"
 	"github.com/nathonNot/go-gdt/igame"
 	"time"
 )
@@ -55,18 +54,4 @@ func (md *Module) GetMsgHandleFunc(msgType int) igame.OnMessage {
 
 func (md *Module) GetServerEvent() map[int]igame.OnServerEvent {
 	return md.ServerEventMap
-}
-
-func ModulesRun(modules []igame.Module) {
-	var mod igame.Module
-	serverConfig := config.GetGlobalConfig()
-	for {
-		timeNow := time.Now()
-		frameTime := serverConfig.GetGameFrameTime()
-		for i := range modules {
-			mod = modules[i]
-			mod.UpLogic(frameTime)
-		}
-		time.Sleep(frameTime - time.Since(timeNow))
-	}
 }

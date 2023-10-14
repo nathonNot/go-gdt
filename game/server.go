@@ -2,9 +2,11 @@ package game
 
 import (
 	"encoding/json"
+	"github.com/nathonNot/go-gdt/config"
 	"github.com/nathonNot/go-gdt/igame"
 	"github.com/nathonNot/go-gdt/log"
 	"sync"
+	"time"
 )
 
 type Server struct {
@@ -12,6 +14,7 @@ type Server struct {
 	GameModulesRunning map[int][]igame.Module // 运行时，协程组id：模块数组
 	GameEventMap       map[int][]igame.OnServerEvent
 	PlayerManage       sync.Map // 玩家管理
+	Running            bool
 }
 
 var instance Server
@@ -36,8 +39,17 @@ func (gameServer *Server) DispatchEventInServer(msgType int, eventData []byte) {
 	}
 }
 
+func ServerInit(mode []igame.Module) {
+
+	instance = Server{}
+	instance.GameEventMap = make(map[int][]igame.OnServerEvent)
+	instance.GameModules = make(map[string]igame.Module)
+	instance.GameModulesRunning = make(map[int][]igame.Module)
+	instance.GameModuleStart(mode)
+	instance.Running = true
+}
+
 func (gameServer *Server) GameModuleStart(mode []igame.Module) {
-	gameServer.GameModulesRunning = make(map[int][]igame.Module)
 	for _, m := range mode {
 		m.New()
 		m.Init()
@@ -67,6 +79,19 @@ func (gameServer *Server) GameModuleStart(mode []igame.Module) {
 			modelName = append(modelName, name)
 		}
 		log.ServerLog().Infof("开始加载协程组：%d, 加载模块名：%v", groupId, modelName)
-		go ModulesRun(v)
+	}
+	go gameServer.ModulesRun()
+
+}
+
+func (gameServer *Server) ModulesRun() {
+	serverConfig := config.GetGlobalConfig()
+	for {
+		timeNow := time.Now()
+		frameTime := serverConfig.GetGameFrameTime()
+		for _, mod := range gameServer.GameModules {
+			mod.UpLogic(frameTime)
+		}
+		time.Sleep(frameTime - time.Since(timeNow))
 	}
 }

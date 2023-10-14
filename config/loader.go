@@ -8,8 +8,6 @@ type IServerConfig interface {
 }
 
 type DefaultConfig struct {
-	Db          DbConfig     `json:"db"`
-	Redis       RedisConfig  `json:"redis"`
 	GameRunTime SGameRunTime `json:"gameRunTime"`
 }
 
