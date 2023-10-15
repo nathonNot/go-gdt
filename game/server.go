@@ -92,6 +92,7 @@ func (gameServer *Server) ModulesRun() {
 		for _, mod := range gameServer.GameModules {
 			mod.UpLogic(frameTime)
 		}
-		time.Sleep(frameTime - time.Since(timeNow))
+		sleepTime := frameTime - time.Since(timeNow)
+		time.Sleep(sleepTime)
 	}
 }

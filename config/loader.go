@@ -3,7 +3,6 @@ package config
 import "time"
 
 type IServerConfig interface {
-	DefaultConfig()
 	GetGameFrameTime() time.Duration
 }
 
@@ -13,11 +12,7 @@ type DefaultConfig struct {
 
 var localConfig IServerConfig
 
-func (c DefaultConfig) DefaultConfig() {
-	localConfig = DefaultConfig{}
-}
-
-func (c DefaultConfig) GetGameFrameTime() time.Duration {
+func (c *DefaultConfig) GetGameFrameTime() time.Duration {
 	return c.GameRunTime.TimeSpentPerFrame
 }
 
