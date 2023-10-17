@@ -14,6 +14,7 @@ type Server struct {
 	GameModulesRunning map[int][]igame.Module // 运行时，协程组id：模块数组
 	GameEventMap       map[int][]igame.OnServerEvent
 	PlayerManage       sync.Map // 玩家管理
+	Connect2Player     sync.Map // 连接到玩家的映射
 	Running            bool
 }
 
