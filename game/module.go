@@ -6,10 +6,11 @@ import (
 )
 
 type Module struct {
-	ModuleName     string                      // 模块名
-	CoroutineGroup int                         // 分配的协程组
-	HandleMsgMap   map[int]igame.OnMessage     // 本模块捕获的协议id
-	ServerEventMap map[int]igame.OnServerEvent // 服务器内事件
+	ModuleName       string                        // 模块名
+	CoroutineGroup   int                           // 分配的协程组
+	HandleMsgMap     map[int]igame.OnMessage       // 本模块捕获的协议id
+	ServerEventMap   map[int]igame.OnServerEvent   // 服务器内事件
+	InServerEventMap map[int]igame.OnInServerEvent // 进程内事件
 }
 
 func (md *Module) New() {
@@ -54,4 +55,8 @@ func (md *Module) GetMsgHandleFunc(msgType int) igame.OnMessage {
 
 func (md *Module) GetServerEvent() map[int]igame.OnServerEvent {
 	return md.ServerEventMap
+}
+
+func (md *Module) GetInServerEvent() map[int]igame.OnInServerEvent {
+	return md.InServerEventMap
 }

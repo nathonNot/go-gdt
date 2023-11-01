@@ -13,6 +13,7 @@ type Server struct {
 	GameModules        map[string]igame.Module
 	GameModulesRunning map[int][]igame.Module // 运行时，协程组id：模块数组
 	GameEventMap       map[int][]igame.OnServerEvent
+	InServerEventMap   map[int][]igame.OnInServerEvent
 	PlayerManage       sync.Map // 玩家管理
 	Connect2Player     sync.Map // 连接到玩家的映射
 	Running            bool
@@ -29,8 +30,8 @@ func DispatchEventInServer(msgType int, eventData interface{}) {
 	instance.DispatchEventInServer(msgType, d)
 }
 
-func (gameServer *Server) DispatchEventInServer(msgType int, eventData []byte) {
-	funcArr, ok := gameServer.GameEventMap[msgType]
+func (gameServer *Server) DispatchEventInServer(msgType int, eventData interface{}) {
+	funcArr, ok := gameServer.InServerEventMap[msgType]
 	if !ok {
 		//log.ServerLog().Error("not find gamer server event", msgType)
 		return
@@ -44,6 +45,7 @@ func ServerInit(mode []igame.Module) {
 
 	instance = Server{}
 	instance.GameEventMap = make(map[int][]igame.OnServerEvent)
+	instance.InServerEventMap = make(map[int][]igame.OnInServerEvent)
 	instance.GameModules = make(map[string]igame.Module)
 	instance.GameModulesRunning = make(map[int][]igame.Module)
 	instance.GameModuleStart(mode)
@@ -64,6 +66,14 @@ func (gameServer *Server) GameModuleStart(mode []igame.Module) {
 				gameServer.GameEventMap[eventType] = append(funcArr, eventFunc)
 			} else {
 				gameServer.GameEventMap[eventType] = []igame.OnServerEvent{eventFunc}
+			}
+		}
+		for eType, eFunc := range m.GetInServerEvent() {
+			funcArr, ok := gameServer.InServerEventMap[eType]
+			if ok {
+				gameServer.InServerEventMap[eType] = append(funcArr, eFunc)
+			} else {
+				gameServer.InServerEventMap[eType] = []igame.OnInServerEvent{eFunc}
 			}
 		}
 	}
