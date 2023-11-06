@@ -5,7 +5,7 @@ import (
 )
 
 type IComponent interface {
-	OnLoad()
+	OnLoad(ctx interface{})
 	OnSave()
 	SetComName(name string)
 	OnActive()
@@ -16,7 +16,7 @@ type SComBase struct {
 	ComName string `json:"-"`
 }
 
-func (S SComBase) OnLoad() {
+func (S SComBase) OnLoad(ctx interface{}) {
 }
 
 func (S SComBase) OnSave() {
