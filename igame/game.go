@@ -2,6 +2,12 @@ package igame
 
 import "time"
 
+type EventMessage struct {
+	MsgType int
+	MsgInfo []byte
+	Id      string
+}
+
 type OnMessage func(msgType int, msgInfo []byte, id string)
 type OnServerEvent func(msgType int, eventData []byte)
 type OnInServerEvent func(msgType int, eventData interface{})

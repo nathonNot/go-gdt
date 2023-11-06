@@ -89,10 +89,32 @@ func (gameServer *Server) GameModuleStart(mode []igame.Module) {
 			name := mod.GetModelName()
 			modelName = append(modelName, name)
 		}
+		go StartGameModuleRunning(v)
 		log.ServerLog().Infof("开始加载协程组：%d, 加载模块名：%v", groupId, modelName)
 	}
 	go gameServer.ModulesRun()
 
+}
+
+var groupChan []chan *igame.EventMessage
+
+func StartGameModuleRunning(models []igame.Module) {
+	eventChan := make(chan *igame.EventMessage, 1000)
+	groupChan = append(groupChan, eventChan)
+	for event := range eventChan {
+		for _, model := range models {
+			f := model.GetMsgHandleFunc(event.MsgType)
+			if f != nil {
+				f(event.MsgType, event.MsgInfo, event.Id)
+			}
+		}
+	}
+}
+
+func AddEventMessage(event *igame.EventMessage) {
+	for _, v := range groupChan {
+		v <- event
+	}
 }
 
 func (gameServer *Server) ModulesRun() {
