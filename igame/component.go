@@ -5,31 +5,12 @@ import (
 )
 
 type IComponent interface {
+	OnInit(ctx interface{})
 	OnLoad(ctx interface{})
-	OnSave()
-	SetComName(name string)
-	OnActive()
-	OnDeActive()
-}
-
-type SComBase struct {
-	ComName string `json:"-"`
-}
-
-func (S SComBase) OnLoad(ctx interface{}) {
-}
-
-func (S SComBase) OnSave() {
-}
-
-func (S SComBase) SetComName(name string) {
-
-}
-
-func (S SComBase) OnActive() {
-}
-
-func (S SComBase) OnDeActive() {
+	OnSave(ctx interface{})
+	ComName() string
+	OnActive() error
+	OnDeActive() error
 }
 
 var componentRoot ComponentRoot
@@ -45,20 +26,14 @@ func InitComponentRoot(root interface{}) {
 	componentRoot.ComponentRef = root
 	val := reflect.Indirect(reflect.ValueOf(root))
 	for i := 0; i < val.NumField(); i++ {
-		fieldType := val.Type().Field(i)
 		fieldValue := val.Field(i)
-		tag := fieldType.Tag.Get("component")
 		// 判断字段类型是否为 combase
-		if tag == "" {
-			// 将字段名称赋值给 ComName 字段
-			continue
-		}
+		// 将字段名称赋值给 ComName 字段
 		if !fieldValue.CanInterface() {
 			continue
 		}
 		iCom := fieldValue.Interface().(IComponent)
-		iCom.SetComName(fieldType.Name)
-		componentRoot.Components[fieldType.Name] = iCom
+		componentRoot.Components[iCom.ComName()] = iCom
 	}
 
 }
