@@ -7,6 +7,7 @@ type IComponent interface {
 	ComName() string
 	OnActive() error
 	OnDeActive() error
+	CustomizeSave() bool
 }
 
 var componentRoot ComponentRoot
