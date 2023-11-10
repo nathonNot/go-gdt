@@ -8,6 +8,10 @@ import (
 )
 import "github.com/panjf2000/ants/v2"
 
+func init() {
+	InitLog()
+}
+
 func InitLog() {
 	logrus.SetReportCaller(true)
 	logrus.SetFormatter(&logrus.JSONFormatter{
