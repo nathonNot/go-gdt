@@ -41,6 +41,17 @@ func (gameServer *Server) DispatchEventInServer(msgType int, eventData interface
 	}
 }
 
+func (gameServer *Server) DispatchEvent(msgType int, eventData []byte) {
+	funcArr, ok := gameServer.GameEventMap[msgType]
+	if !ok {
+		//log.ServerLog().Error("not find gamer server event", msgType)
+		return
+	}
+	for _, f := range funcArr {
+		f(msgType, eventData)
+	}
+}
+
 func ServerInit(mode []igame.Module) {
 
 	instance = Server{}
