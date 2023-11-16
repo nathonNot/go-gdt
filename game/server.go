@@ -5,6 +5,7 @@ import (
 	"github.com/nathonNot/go-gdt/config"
 	"github.com/nathonNot/go-gdt/igame"
 	"github.com/nathonNot/go-gdt/log"
+	"github.com/panjf2000/ants/v2"
 	"sync"
 	"time"
 )
@@ -49,6 +50,19 @@ func (gameServer *Server) DispatchEvent(msgType int, eventData []byte) {
 	}
 	for _, f := range funcArr {
 		f(msgType, eventData)
+	}
+}
+
+func (gameServer *Server) DispatchEventAsync(msgType int, eventData []byte) {
+	funcArr, ok := gameServer.GameEventMap[msgType]
+	if !ok {
+		//log.ServerLog().Error("not find gamer server event", msgType)
+		return
+	}
+	for _, f := range funcArr {
+		ants.Submit(func() {
+			f(msgType, eventData)
+		})
 	}
 }
 
