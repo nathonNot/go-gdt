@@ -40,6 +40,19 @@ func (gameServer *Server) DispatchEventInServer(msgType int, eventData interface
 	}
 }
 
+func (gameServer *Server) DispatchEventInServerAsync(msgType int, eventData interface{}) {
+	funcArr, ok := gameServer.InServerEventMap[msgType]
+	if !ok {
+		//log.ServerLog().Error("not find gamer server event", msgType)
+		return
+	}
+	for _, f := range funcArr {
+		ants.Submit(func() {
+			f(msgType, eventData)
+		})
+	}
+}
+
 func (gameServer *Server) DispatchEvent(msgType int, eventData []byte) {
 	funcArr, ok := gameServer.GameEventMap[msgType]
 	if !ok {
